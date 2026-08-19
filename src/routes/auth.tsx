@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>) => ({
-    mode: search.mode === "signup" ? ("signup" as const) : ("login" as const),
+    mode: search['mode'] === "signup" ? ("signup" as const) : ("login" as const),
   }),
   head: () => ({
     meta: [
@@ -54,12 +54,18 @@ function AuthPage() {
         options: { emailRedirectTo: `${window.location.origin}/abonnement` },
       });
       setBusy(false);
-      if (error) return toast.error(error.message);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       toast.success("Compte créé. Vérifiez votre boîte mail pour confirmer.");
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setBusy(false);
-      if (error) return toast.error(error.message);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       navigate({ to: "/abonnement" });
     }
   };
@@ -68,7 +74,10 @@ function AuthPage() {
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
-    if (result.error) return toast.error("Connexion Google impossible.");
+    if (result.error) {
+      toast.error("Connexion Google impossible.");
+      return;
+    }
     if (result.redirected) return;
     navigate({ to: "/abonnement" });
   };
