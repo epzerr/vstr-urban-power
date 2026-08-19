@@ -92,8 +92,8 @@ function Index() {
         <div className="mx-auto max-w-4xl px-6">
           <p className="text-[10px] tracking-[0.4em] text-foreground/40">01 — LE CONSTAT</p>
           <h2 className="mt-8 text-[clamp(1.7rem,3.4vw,3rem)] font-black uppercase leading-[1.02] tracking-[-0.02em]">
-            Identifier le problème : le coût de la vie en centre-ville grignote votre pouvoir
-            d'achat et étouffe le commerce local.
+            Le coût de la vie en centre-ville grignote votre pouvoir d'achat et étouffe le commerce
+            local.
           </h2>
           <p className="mt-10 max-w-2xl text-base leading-relaxed text-foreground/70 md:text-lg">
             Chaque mois, les prix montent et le panier se resserre. Les habitants renoncent aux
@@ -110,7 +110,7 @@ function Index() {
           <div>
             <p className="text-[10px] tracking-[0.4em] text-foreground/40">02 — LA RÉPONSE</p>
             <h2 className="mt-8 text-[clamp(1.7rem,3.4vw,3rem)] font-black uppercase leading-[1.02] tracking-[-0.02em]">
-              Présenter la solution : VSTR, l'abonnement intelligent pour soutenir votre ville et
+              Notre solution : VSTR, l'abonnement intelligent pour soutenir votre ville et
               économiser.
             </h2>
           </div>
