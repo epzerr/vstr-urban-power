@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ShoppingBag, UserPlus, MapPin, PiggyBank, Percent, Gift, Store } from "lucide-react";
+import { UserPlus, MapPin, PiggyBank, Percent, Gift, Store } from "lucide-react";
 import heroImg from "@/assets/vstr-hero.jpg";
 import cityImg from "@/assets/vstr-city.jpg";
 
@@ -46,10 +46,12 @@ function Index() {
               </a>
             ))}
           </nav>
-          <div className="flex items-center gap-3">
-            <ShoppingBag className="h-5 w-5" strokeWidth={1.5} />
-            <span className="text-xs font-bold tracking-[0.3em]">VSTR</span>
-          </div>
+          <a
+            href="#cta"
+            className="bg-foreground px-5 py-2.5 text-[10px] font-bold tracking-[0.15em] text-background transition-opacity hover:opacity-80 md:text-xs"
+          >
+            S'INSCRIRE / SE CONNECTER
+          </a>
         </div>
       </header>
 
