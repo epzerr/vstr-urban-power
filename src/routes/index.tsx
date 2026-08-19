@@ -25,7 +25,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const NAV = ["Offres", "Boutiques", "Abonnement", "Éditorial"];
+const NAV = ["Boutiques", "Abonnement", "Devenir partenaire"];
 
 function Index() {
   return (
