@@ -46,12 +46,12 @@ function Index() {
               </a>
             ))}
           </nav>
-          <a
-            href="#cta"
+          <Link
+            to="/auth"
             className="bg-foreground px-5 py-2.5 text-[10px] font-bold tracking-[0.15em] text-background transition-opacity hover:opacity-80 md:text-xs"
           >
             S'INSCRIRE / SE CONNECTER
-          </a>
+          </Link>
         </div>
       </header>
 
