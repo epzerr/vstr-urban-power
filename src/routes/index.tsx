@@ -36,15 +36,25 @@ function Index() {
             VSTR
           </a>
           <nav className="hidden items-center gap-10 md:flex">
-            {NAV.map((item) => (
-              <a
-                key={item}
-                href="#"
-                className="text-sm tracking-wide text-foreground/80 transition-colors hover:text-foreground"
-              >
-                {item}
-              </a>
-            ))}
+            {NAV.map((item) =>
+              item === "Abonnement" ? (
+                <Link
+                  key={item}
+                  to="/abonnement"
+                  className="text-sm tracking-wide text-foreground/80 transition-colors hover:text-foreground"
+                >
+                  {item}
+                </Link>
+              ) : (
+                <a
+                  key={item}
+                  href="#"
+                  className="text-sm tracking-wide text-foreground/80 transition-colors hover:text-foreground"
+                >
+                  {item}
+                </a>
+              )
+            )}
           </nav>
           <Link
             to="/auth"
