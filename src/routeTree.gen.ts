@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AbonnementRouteImport } from './routes/abonnement'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BoutiquesRouteImport } from './routes/boutiques'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BoutiquesRoute = BoutiquesRouteImport.update({
+  id: '/boutiques',
+  path: '/boutiques',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/abonnement': typeof AbonnementRoute
   '/auth': typeof AuthRoute
+  '/boutiques': typeof BoutiquesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/abonnement': typeof AbonnementRoute
   '/auth': typeof AuthRoute
+  '/boutiques': typeof BoutiquesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/abonnement': typeof AbonnementRoute
   '/auth': typeof AuthRoute
+  '/boutiques': typeof BoutiquesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/abonnement' | '/auth'
+  fullPaths: '/' | '/abonnement' | '/auth' | '/boutiques'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/abonnement' | '/auth'
-  id: '__root__' | '/' | '/abonnement' | '/auth'
+  to: '/' | '/abonnement' | '/auth' | '/boutiques'
+  id: '__root__' | '/' | '/abonnement' | '/auth' | '/boutiques'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AbonnementRoute: typeof AbonnementRoute
   AuthRoute: typeof AuthRoute
+  BoutiquesRoute: typeof BoutiquesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/boutiques': {
+      id: '/boutiques'
+      path: '/boutiques'
+      fullPath: '/boutiques'
+      preLoaderRoute: typeof BoutiquesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AbonnementRoute: AbonnementRoute,
   AuthRoute: AuthRoute,
+  BoutiquesRoute: BoutiquesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
