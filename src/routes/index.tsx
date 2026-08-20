@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { UserPlus, MapPin, PiggyBank, Percent, Gift, Store } from "lucide-react";
 import heroImg from "@/assets/vstr-hero.jpg";
 import cityImg from "@/assets/vstr-city.jpg";
