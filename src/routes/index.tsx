@@ -84,12 +84,12 @@ function Index() {
               VSTR : votre pouvoir d'achat urbain redéfini
             </h1>
             <div className="mt-12">
-              <a
-                href="#cta"
+              <Link
+                to="/abonnement"
                 className="inline-block bg-foreground px-10 py-5 text-xs font-bold tracking-[0.2em] text-background transition-opacity hover:opacity-80"
               >
                 DÉBLOQUER MON CENTRE-VILLE AVEC VSTR
-              </a>
+              </Link>
             </div>
           </div>
           <div className="order-1 md:order-2 md:translate-y-10">
@@ -220,12 +220,12 @@ function Index() {
             Votre prochaine étape est ici.
           </h2>
           <div className="mt-14">
-            <a
-              href="#cta"
+            <Link
+              to="/abonnement"
               className="inline-block bg-foreground px-12 py-6 text-xs font-bold tracking-[0.2em] text-background transition-opacity hover:opacity-80 md:text-sm"
             >
               REJOINDRE LE MOUVEMENT VSTR MAINTENANT
-            </a>
+            </Link>
           </div>
         </div>
       </section>
