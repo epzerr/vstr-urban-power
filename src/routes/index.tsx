@@ -37,7 +37,15 @@ function Index() {
           </a>
           <nav className="hidden items-center gap-10 md:flex">
             {NAV.map((item) =>
-              item === "Abonnement" ? (
+              item === "Boutiques" ? (
+                <Link
+                  key={item}
+                  to="/boutiques"
+                  className="text-sm tracking-wide text-foreground/80 transition-colors hover:text-foreground"
+                >
+                  {item}
+                </Link>
+              ) : item === "Abonnement" ? (
                 <Link
                   key={item}
                   to="/abonnement"
@@ -48,7 +56,7 @@ function Index() {
               ) : (
                 <a
                   key={item}
-                  href="#"
+                  href="#cta"
                   className="text-sm tracking-wide text-foreground/80 transition-colors hover:text-foreground"
                 >
                   {item}
