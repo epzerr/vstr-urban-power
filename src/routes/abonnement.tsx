@@ -111,12 +111,13 @@ function PricingPage() {
               ))}
             </ul>
 
-            <button
-              type="button"
-              className="mt-10 w-full bg-foreground px-8 py-5 text-xs font-bold tracking-[0.2em] text-background transition-opacity hover:opacity-80"
+            <Link
+              to="/paiement"
+              search={{ period }}
+              className="mt-10 flex w-full items-center justify-center bg-foreground px-8 py-5 text-xs font-bold tracking-[0.2em] text-background transition-opacity hover:opacity-80"
             >
               {period === "monthly" ? "COMMENCER À 3 € / MOIS" : "COMMENCER À 30 € / AN"}
-            </button>
+            </Link>
 
             <p className="mt-4 text-center text-[10px] tracking-[0.15em] text-foreground/40">
               Paiement sécurisé. Sans engagement. Annulation à tout moment.
@@ -127,7 +128,7 @@ function PricingPage() {
 
       <footer className="border-t border-border/40 py-10">
         <div className="mx-auto flex max-w-[1600px] flex-col items-center justify-between gap-4 px-6 text-[10px] tracking-[0.3em] text-foreground/40 md:flex-row md:px-12">
-          <span>VSTR — BARBÂTRE</span>
+          <span>VSTR — NANTES</span>
           <span>PRINTEMPS / ÉTÉ 2026</span>
         </div>
       </footer>
