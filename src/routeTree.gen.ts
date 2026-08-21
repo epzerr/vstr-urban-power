@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AbonnementRouteImport } from './routes/abonnement'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BoutiquesRouteImport } from './routes/boutiques'
+import { Route as ContactRouteImport } from './routes/contact'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const BoutiquesRoute = BoutiquesRouteImport.update({
   path: '/boutiques',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/abonnement': typeof AbonnementRoute
   '/auth': typeof AuthRoute
   '/boutiques': typeof BoutiquesRoute
+  '/contact': typeof ContactRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/abonnement': typeof AbonnementRoute
   '/auth': typeof AuthRoute
   '/boutiques': typeof BoutiquesRoute
+  '/contact': typeof ContactRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/abonnement': typeof AbonnementRoute
   '/auth': typeof AuthRoute
   '/boutiques': typeof BoutiquesRoute
+  '/contact': typeof ContactRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/abonnement' | '/auth' | '/boutiques'
+  fullPaths: '/' | '/abonnement' | '/auth' | '/boutiques' | '/contact'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/abonnement' | '/auth' | '/boutiques'
-  id: '__root__' | '/' | '/abonnement' | '/auth' | '/boutiques'
+  to: '/' | '/abonnement' | '/auth' | '/boutiques' | '/contact'
+  id: '__root__' | '/' | '/abonnement' | '/auth' | '/boutiques' | '/contact'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +76,7 @@ export interface RootRouteChildren {
   AbonnementRoute: typeof AbonnementRoute
   AuthRoute: typeof AuthRoute
   BoutiquesRoute: typeof BoutiquesRoute
+  ContactRoute: typeof ContactRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BoutiquesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   AbonnementRoute: AbonnementRoute,
   AuthRoute: AuthRoute,
   BoutiquesRoute: BoutiquesRoute,
+  ContactRoute: ContactRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
