@@ -111,12 +111,13 @@ function PricingPage() {
               ))}
             </ul>
 
-            <button
-              type="button"
-              className="mt-10 w-full bg-foreground px-8 py-5 text-xs font-bold tracking-[0.2em] text-background transition-opacity hover:opacity-80"
+            <Link
+              to="/paiement"
+              search={{ period }}
+              className="mt-10 flex w-full items-center justify-center bg-foreground px-8 py-5 text-xs font-bold tracking-[0.2em] text-background transition-opacity hover:opacity-80"
             >
               {period === "monthly" ? "COMMENCER À 3 € / MOIS" : "COMMENCER À 30 € / AN"}
-            </button>
+            </Link>
 
             <p className="mt-4 text-center text-[10px] tracking-[0.15em] text-foreground/40">
               Paiement sécurisé. Sans engagement. Annulation à tout moment.
