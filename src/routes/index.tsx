@@ -54,13 +54,13 @@ function Index() {
                   {item}
                 </Link>
               ) : (
-                <a
+                <Link
                   key={item}
-                  href="#cta"
+                  to="/contact"
                   className="text-sm tracking-wide text-foreground/80 transition-colors hover:text-foreground"
                 >
                   {item}
-                </a>
+                </Link>
               )
             )}
           </nav>
@@ -196,7 +196,7 @@ function Index() {
               Qui sommes-nous : VSTR Origin, born in the city, for the city.
             </h2>
             <p className="mt-10 text-base leading-relaxed text-foreground/70 md:text-lg">
-              VSTR est né à Barbâtre, entre les vitrines d'artisans et les rues qui se vident hors
+              VSTR est né à Nantes, entre les vitrines d'artisans et les rues qui se vident hors
               saison. Nous avons grandi avec ces commerces : le torréfacteur, la boutique de prêt-à-porter,
               le disquaire. Notre vision est simple et têtue — rendre le centre-ville plus
               avantageux que la périphérie, pour ceux qui y vivent comme pour ceux qui y travaillent.
@@ -221,7 +221,7 @@ function Index() {
           </h2>
           <div className="mt-14">
             <a
-              href="#"
+              href="#cta"
               className="inline-block bg-foreground px-12 py-6 text-xs font-bold tracking-[0.2em] text-background transition-opacity hover:opacity-80 md:text-sm"
             >
               REJOINDRE LE MOUVEMENT VSTR MAINTENANT
@@ -232,7 +232,7 @@ function Index() {
 
       <footer className="border-t border-border/40 py-10">
         <div className="mx-auto flex max-w-[1600px] flex-col items-center justify-between gap-4 px-6 text-[10px] tracking-[0.3em] text-foreground/40 md:flex-row md:px-12">
-          <span>VSTR — BARBÂTRE</span>
+          <span>VSTR — NANTES</span>
           <span>PRINTEMPS / ÉTÉ 2026</span>
         </div>
       </footer>
