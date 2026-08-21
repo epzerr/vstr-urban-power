@@ -128,7 +128,7 @@ function PricingPage() {
 
       <footer className="border-t border-border/40 py-10">
         <div className="mx-auto flex max-w-[1600px] flex-col items-center justify-between gap-4 px-6 text-[10px] tracking-[0.3em] text-foreground/40 md:flex-row md:px-12">
-          <span>VSTR — BARBÂTRE</span>
+          <span>VSTR — NANTES</span>
           <span>PRINTEMPS / ÉTÉ 2026</span>
         </div>
       </footer>
