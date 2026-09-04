@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BoutiquesRouteImport } from './routes/boutiques'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as PaiementRouteImport } from './routes/paiement'
+import { Route as AdminBoutiquesRouteImport } from './routes/admin/boutiques'
 import { Route as AdminUnlockRouteImport } from './routes/admin/unlock'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,6 +48,11 @@ const PaiementRoute = PaiementRouteImport.update({
   path: '/paiement',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminBoutiquesRoute = AdminBoutiquesRouteImport.update({
+  id: '/admin/boutiques',
+  path: '/admin/boutiques',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminUnlockRoute = AdminUnlockRouteImport.update({
   id: '/admin/unlock',
   path: '/admin/unlock',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/boutiques': typeof BoutiquesRoute
   '/contact': typeof ContactRoute
   '/paiement': typeof PaiementRoute
+  '/admin/boutiques': typeof AdminBoutiquesRoute
   '/admin/unlock': typeof AdminUnlockRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/boutiques': typeof BoutiquesRoute
   '/contact': typeof ContactRoute
   '/paiement': typeof PaiementRoute
+  '/admin/boutiques': typeof AdminBoutiquesRoute
   '/admin/unlock': typeof AdminUnlockRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/boutiques': typeof BoutiquesRoute
   '/contact': typeof ContactRoute
   '/paiement': typeof PaiementRoute
+  '/admin/boutiques': typeof AdminBoutiquesRoute
   '/admin/unlock': typeof AdminUnlockRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/boutiques'
     | '/contact'
     | '/paiement'
+    | '/admin/boutiques'
     | '/admin/unlock'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/boutiques'
     | '/contact'
     | '/paiement'
+    | '/admin/boutiques'
     | '/admin/unlock'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/boutiques'
     | '/contact'
     | '/paiement'
+    | '/admin/boutiques'
     | '/admin/unlock'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +130,7 @@ export interface RootRouteChildren {
   BoutiquesRoute: typeof BoutiquesRoute
   ContactRoute: typeof ContactRoute
   PaiementRoute: typeof PaiementRoute
+  AdminBoutiquesRoute: typeof AdminBoutiquesRoute
   AdminUnlockRoute: typeof AdminUnlockRoute
 }
 
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaiementRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/boutiques': {
+      id: '/admin/boutiques'
+      path: '/admin/boutiques'
+      fullPath: '/admin/boutiques'
+      preLoaderRoute: typeof AdminBoutiquesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/unlock': {
       id: '/admin/unlock'
       path: '/admin/unlock'
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   BoutiquesRoute: BoutiquesRoute,
   ContactRoute: ContactRoute,
   PaiementRoute: PaiementRoute,
+  AdminBoutiquesRoute: AdminBoutiquesRoute,
   AdminUnlockRoute: AdminUnlockRoute,
 }
 export const routeTree = rootRouteImport

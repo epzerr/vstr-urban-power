@@ -91,7 +91,7 @@ function AdminBoutiques() {
   }
 
   async function logout() {
-    await lock({ data: {} });
+    await lock();
     await router.navigate({ to: "/admin/unlock" });
   }
 
@@ -235,7 +235,19 @@ function AdminBoutiques() {
                   <td className="py-4">
                     <div className="flex items-center justify-end gap-2 opacity-60 transition-opacity group-hover:opacity-100">
                       <button
-                        onClick={() => setEditing({ ...b })}
+                        onClick={() =>
+                          setEditing({
+                            id: b.id,
+                            name: b.name,
+                            area: b.area,
+                            address: b.address ?? "",
+                            lat: b.lat,
+                            lng: b.lng,
+                            offer: b.offer,
+                            offer_type: b.offer_type as "permanent" | "unique",
+                            is_active: b.is_active,
+                          })
+                        }
                         className="p-2 transition-colors hover:bg-foreground/10"
                         aria-label="Modifier"
                       >
