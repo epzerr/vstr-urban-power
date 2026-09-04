@@ -14,7 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      boutiques: {
+        Row: {
+          address: string | null
+          area: string
+          created_at: string
+          id: string
+          is_active: boolean
+          lat: number
+          lng: number
+          name: string
+          offer: string
+          offer_type: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          area: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lat: number
+          lng: number
+          name: string
+          offer: string
+          offer_type?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          area?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lat?: number
+          lng?: number
+          name?: string
+          offer?: string
+          offer_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
