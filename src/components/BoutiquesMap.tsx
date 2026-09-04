@@ -1,12 +1,7 @@
 import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-
-export type Shop = {
-  name: string;
-  lat: number;
-  lng: number;
-};
+import type { Boutique } from "@/lib/boutiques.functions";
 
 const pin = L.divIcon({
   className: "",
@@ -15,7 +10,7 @@ const pin = L.divIcon({
   iconAnchor: [7, 7],
 });
 
-export default function BoutiquesMap({ shops }: { shops: Shop[] }) {
+export default function BoutiquesMap({ shops }: { shops: Boutique[] }) {
   return (
     <MapContainer
       center={[47.2155, -1.5554]}
@@ -27,7 +22,7 @@ export default function BoutiquesMap({ shops }: { shops: Shop[] }) {
       <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png" />
       <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png" />
       {shops.map((s) => (
-        <Marker key={s.name} position={[s.lat, s.lng]} icon={pin}>
+        <Marker key={s.id} position={[s.lat, s.lng]} icon={pin}>
           <Tooltip
             direction="top"
             offset={[0, -10]}
