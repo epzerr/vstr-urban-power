@@ -64,12 +64,19 @@ export const listBoutiquesAdmin = createServerFn({ method: "GET" }).handler(asyn
   return data ?? [];
 });
 
+function normalizeAddress(data: z.infer<typeof boutiqueSchema>) {
+  return {
+    ...data,
+    address: data.address?.trim() || null,
+  };
+}
+
 export const createBoutique = createServerFn({ method: "POST" })
   .inputValidator((data) => boutiqueSchema.parse(data))
   .handler(async ({ data }) => {
     await requireUnlocked();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("boutiques").insert(data);
+    const { error } = await supabaseAdmin.from("boutiques").insert(normalizeAddress(data));
     if (error) throw error;
     return { ok: true as const };
   });
@@ -82,7 +89,7 @@ export const updateBoutique = createServerFn({ method: "POST" })
     await requireUnlocked();
     const { id, ...rest } = data;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("boutiques").update(rest).eq("id", id);
+    const { error } = await supabaseAdmin.from("boutiques").update(normalizeAddress(rest)).eq("id", id);
     if (error) throw error;
     return { ok: true as const };
   });
