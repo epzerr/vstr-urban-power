@@ -31,14 +31,25 @@ export const Route = createFileRoute("/admin/boutiques")({
   component: AdminBoutiques,
 });
 
-const EMPTY = {
+type BoutiqueForm = {
+  name: string;
+  area: string;
+  address: string;
+  lat: number;
+  lng: number;
+  offer: string;
+  offer_type: "permanent" | "unique";
+  is_active: boolean;
+};
+
+const EMPTY: BoutiqueForm = {
   name: "",
   area: "",
   address: "",
   lat: 47.2155,
   lng: -1.5554,
   offer: "",
-  offer_type: "permanent" as const,
+  offer_type: "permanent",
   is_active: true,
 };
 
@@ -58,7 +69,7 @@ function AdminBoutiques() {
   const remove = useServerFn(deleteBoutique);
   const lock = useServerFn(lockAdmin);
 
-  const [editing, setEditing] = useState<(typeof EMPTY & { id?: string }) | null>(null);
+  const [editing, setEditing] = useState<(BoutiqueForm & { id?: string }) | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
