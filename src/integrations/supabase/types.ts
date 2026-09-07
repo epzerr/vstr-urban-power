@@ -24,8 +24,10 @@ export type Database = {
           lat: number
           lng: number
           name: string
-          offer: string
+          offer: string | null
           offer_type: string
+          permanent_offer: string | null
+          unique_offer: string | null
           updated_at: string
         }
         Insert: {
@@ -37,8 +39,10 @@ export type Database = {
           lat: number
           lng: number
           name: string
-          offer: string
+          offer?: string | null
           offer_type?: string
+          permanent_offer?: string | null
+          unique_offer?: string | null
           updated_at?: string
         }
         Update: {
@@ -50,8 +54,10 @@ export type Database = {
           lat?: number
           lng?: number
           name?: string
-          offer?: string
+          offer?: string | null
           offer_type?: string
+          permanent_offer?: string | null
+          unique_offer?: string | null
           updated_at?: string
         }
         Relationships: []
