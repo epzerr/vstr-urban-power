@@ -177,14 +177,6 @@ function AdminBoutiques() {
                 required
                 className={inputClass}
               />
-              <select
-                name="offer_type"
-                defaultValue={editing.offer_type}
-                className={`${inputClass} appearance-none`}
-              >
-                <option value="permanent">Permanente</option>
-                <option value="unique">Unique</option>
-              </select>
               <label className="flex items-center gap-2 text-sm">
                 <input
                   name="is_active"
@@ -195,14 +187,33 @@ function AdminBoutiques() {
                 Active
               </label>
             </div>
-            <textarea
-              name="offer"
-              defaultValue={editing.offer}
-              placeholder="Offre"
-              required
-              rows={3}
-              className={`${inputClass} mt-4`}
-            />
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/60">
+                  Offre permanente
+                </label>
+                <input
+                  name="permanent_offer"
+                  defaultValue={editing.permanent_offer}
+                  placeholder="Ex : -10% toute l'année"
+                  className={`${inputClass} mt-2`}
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/60">
+                  Offre unique (une seule utilisation)
+                </label>
+                <input
+                  name="unique_offer"
+                  defaultValue={editing.unique_offer}
+                  placeholder="Ex : -20% une fois"
+                  className={`${inputClass} mt-2`}
+                />
+              </div>
+            </div>
+            <p className="mt-3 text-xs text-foreground/50">
+              Renseignez au moins une des deux offres.
+            </p>
             <div className="mt-6 flex gap-3">
               <button
                 type="submit"
