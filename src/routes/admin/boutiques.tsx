@@ -265,8 +265,8 @@ function AdminBoutiques() {
                             address: b.address ?? "",
                             lat: b.lat,
                             lng: b.lng,
-                            offer: b.offer,
-                            offer_type: b.offer_type as "permanent" | "unique",
+                            permanent_offer: b.permanent_offer ?? "",
+                            unique_offer: b.unique_offer ?? "",
                             is_active: b.is_active,
                           })
                         }
