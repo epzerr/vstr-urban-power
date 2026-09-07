@@ -249,8 +249,8 @@ function AdminBoutiques() {
                 <tr key={b.id} className="group">
                   <td className="py-4 font-bold">{b.name}</td>
                   <td className="py-4 text-foreground/70">{b.area}</td>
-                  <td className="py-4 text-foreground/70">{b.offer}</td>
-                  <td className="py-4 text-foreground/70">{b.offer_type}</td>
+                  <td className="py-4 text-foreground/70">{b.permanent_offer ?? "—"}</td>
+                  <td className="py-4 text-foreground/70">{b.unique_offer ?? "—"}</td>
                   <td className="py-4 text-foreground/70">
                     {b.is_active ? "Active" : "Inactive"}
                   </td>
