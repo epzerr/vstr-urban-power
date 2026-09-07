@@ -81,8 +81,8 @@ function AdminBoutiques() {
       address: String(form.get("address") || ""),
       lat: Number(form.get("lat")),
       lng: Number(form.get("lng")),
-      offer: String(form.get("offer")),
-      offer_type: String(form.get("offer_type")) as "permanent" | "unique",
+      permanent_offer: String(form.get("permanent_offer") || ""),
+      unique_offer: String(form.get("unique_offer") || ""),
       is_active: form.get("is_active") === "on",
     };
 
