@@ -45,21 +45,24 @@ export const lockAdmin = createServerFn({ method: "POST" }).handler(async () => 
   return { ok: true as const };
 });
 
-const boutiqueSchema = z
-  .object({
-    name: z.string().min(1, "Le nom est requis"),
-    area: z.string().min(1, "Le quartier est requis"),
-    address: z.string().optional(),
-    lat: z.number(),
-    lng: z.number(),
-    permanent_offer: z.string().optional(),
-    unique_offer: z.string().optional(),
-    is_active: z.boolean().default(true),
-  })
-  .refine((d) => (d.permanent_offer?.trim() || d.unique_offer?.trim()), {
-    message: "Renseignez au moins une offre",
-    path: ["permanent_offer"],
-  });
+const baseBoutiqueSchema = z.object({
+  name: z.string().min(1, "Le nom est requis"),
+  area: z.string().min(1, "Le quartier est requis"),
+  address: z.string().optional(),
+  lat: z.number(),
+  lng: z.number(),
+  permanent_offer: z.string().optional(),
+  unique_offer: z.string().optional(),
+  is_active: z.boolean().default(true),
+});
+
+const hasOffer = {
+  check: (d: { permanent_offer?: string; unique_offer?: string }) =>
+    Boolean(d.permanent_offer?.trim() || d.unique_offer?.trim()),
+  opts: { message: "Renseignez au moins une offre", path: ["permanent_offer"] as const },
+};
+
+const boutiqueSchema = baseBoutiqueSchema.refine(hasOffer.check, hasOffer.opts);
 
 export const listBoutiquesAdmin = createServerFn({ method: "GET" }).handler(async () => {
   await requireUnlocked();
