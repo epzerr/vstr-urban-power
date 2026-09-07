@@ -37,8 +37,8 @@ type BoutiqueForm = {
   address: string;
   lat: number;
   lng: number;
-  offer: string;
-  offer_type: "permanent" | "unique";
+  permanent_offer: string;
+  unique_offer: string;
   is_active: boolean;
 };
 
@@ -48,8 +48,8 @@ const EMPTY: BoutiqueForm = {
   address: "",
   lat: 47.2155,
   lng: -1.5554,
-  offer: "",
-  offer_type: "permanent",
+  permanent_offer: "",
+  unique_offer: "",
   is_active: true,
 };
 
