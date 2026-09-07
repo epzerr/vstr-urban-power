@@ -45,24 +45,16 @@ export const lockAdmin = createServerFn({ method: "POST" }).handler(async () => 
   return { ok: true as const };
 });
 
-const baseBoutiqueSchema = z.object({
+const boutiqueSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
   area: z.string().min(1, "Le quartier est requis"),
-  address: z.string().optional(),
+  address: z.string().default(""),
   lat: z.number(),
   lng: z.number(),
-  permanent_offer: z.string().optional(),
-  unique_offer: z.string().optional(),
+  permanent_offer: z.string().default(""),
+  unique_offer: z.string().default(""),
   is_active: z.boolean().default(true),
 });
-
-const hasOffer = {
-  check: (d: { permanent_offer?: string; unique_offer?: string }) =>
-    Boolean(d.permanent_offer?.trim() || d.unique_offer?.trim()),
-  opts: { message: "Renseignez au moins une offre", path: ["permanent_offer"] as const },
-};
-
-const boutiqueSchema = baseBoutiqueSchema.refine(hasOffer.check, hasOffer.opts);
 
 export const listBoutiquesAdmin = createServerFn({ method: "GET" }).handler(async () => {
   await requireUnlocked();
@@ -72,10 +64,21 @@ export const listBoutiquesAdmin = createServerFn({ method: "GET" }).handler(asyn
   return data ?? [];
 });
 
-function normalizeAddress(data: z.infer<typeof boutiqueSchema>) {
+function toRow(data: z.infer<typeof boutiqueSchema>) {
+  const permanent = data.permanent_offer.trim();
+  const unique = data.unique_offer.trim();
+  if (!permanent && !unique) throw new Error("Renseignez au moins une offre");
   return {
-    ...data,
-    address: data.address?.trim() || null,
+    name: data.name,
+    area: data.area,
+    address: data.address.trim() || null,
+    lat: data.lat,
+    lng: data.lng,
+    permanent_offer: permanent || null,
+    unique_offer: unique || null,
+    offer: permanent || unique,
+    offer_type: permanent ? "permanent" : "unique",
+    is_active: data.is_active,
   };
 }
 
@@ -84,7 +87,7 @@ export const createBoutique = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     await requireUnlocked();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("boutiques").insert(normalizeAddress(data));
+    const { error } = await supabaseAdmin.from("boutiques").insert(toRow(data));
     if (error) throw error;
     return { ok: true as const };
   });
@@ -97,7 +100,7 @@ export const updateBoutique = createServerFn({ method: "POST" })
     await requireUnlocked();
     const { id, ...rest } = data;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("boutiques").update(normalizeAddress(rest)).eq("id", id);
+    const { error } = await supabaseAdmin.from("boutiques").update(toRow(rest)).eq("id", id);
     if (error) throw error;
     return { ok: true as const };
   });
