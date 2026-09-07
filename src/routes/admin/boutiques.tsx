@@ -238,8 +238,8 @@ function AdminBoutiques() {
               <tr>
                 <th className="pb-3 font-normal">Nom</th>
                 <th className="pb-3 font-normal">Quartier</th>
-                <th className="pb-3 font-normal">Offre</th>
-                <th className="pb-3 font-normal">Type</th>
+                <th className="pb-3 font-normal">Offre permanente</th>
+                <th className="pb-3 font-normal">Offre unique</th>
                 <th className="pb-3 font-normal">Statut</th>
                 <th className="pb-3 font-normal"></th>
               </tr>
