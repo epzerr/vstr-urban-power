@@ -37,8 +37,8 @@ type BoutiqueForm = {
   address: string;
   lat: number;
   lng: number;
-  offer: string;
-  offer_type: "permanent" | "unique";
+  permanent_offer: string;
+  unique_offer: string;
   is_active: boolean;
 };
 
@@ -48,8 +48,8 @@ const EMPTY: BoutiqueForm = {
   address: "",
   lat: 47.2155,
   lng: -1.5554,
-  offer: "",
-  offer_type: "permanent",
+  permanent_offer: "",
+  unique_offer: "",
   is_active: true,
 };
 
@@ -81,8 +81,8 @@ function AdminBoutiques() {
       address: String(form.get("address") || ""),
       lat: Number(form.get("lat")),
       lng: Number(form.get("lng")),
-      offer: String(form.get("offer")),
-      offer_type: String(form.get("offer_type")) as "permanent" | "unique",
+      permanent_offer: String(form.get("permanent_offer") || ""),
+      unique_offer: String(form.get("unique_offer") || ""),
       is_active: form.get("is_active") === "on",
     };
 
@@ -177,14 +177,6 @@ function AdminBoutiques() {
                 required
                 className={inputClass}
               />
-              <select
-                name="offer_type"
-                defaultValue={editing.offer_type}
-                className={`${inputClass} appearance-none`}
-              >
-                <option value="permanent">Permanente</option>
-                <option value="unique">Unique</option>
-              </select>
               <label className="flex items-center gap-2 text-sm">
                 <input
                   name="is_active"
@@ -195,14 +187,33 @@ function AdminBoutiques() {
                 Active
               </label>
             </div>
-            <textarea
-              name="offer"
-              defaultValue={editing.offer}
-              placeholder="Offre"
-              required
-              rows={3}
-              className={`${inputClass} mt-4`}
-            />
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/60">
+                  Offre permanente
+                </label>
+                <input
+                  name="permanent_offer"
+                  defaultValue={editing.permanent_offer}
+                  placeholder="Ex : -10% toute l'année"
+                  className={`${inputClass} mt-2`}
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/60">
+                  Offre unique (une seule utilisation)
+                </label>
+                <input
+                  name="unique_offer"
+                  defaultValue={editing.unique_offer}
+                  placeholder="Ex : -20% une fois"
+                  className={`${inputClass} mt-2`}
+                />
+              </div>
+            </div>
+            <p className="mt-3 text-xs text-foreground/50">
+              Renseignez au moins une des deux offres.
+            </p>
             <div className="mt-6 flex gap-3">
               <button
                 type="submit"
@@ -227,8 +238,8 @@ function AdminBoutiques() {
               <tr>
                 <th className="pb-3 font-normal">Nom</th>
                 <th className="pb-3 font-normal">Quartier</th>
-                <th className="pb-3 font-normal">Offre</th>
-                <th className="pb-3 font-normal">Type</th>
+                <th className="pb-3 font-normal">Offre permanente</th>
+                <th className="pb-3 font-normal">Offre unique</th>
                 <th className="pb-3 font-normal">Statut</th>
                 <th className="pb-3 font-normal"></th>
               </tr>
@@ -238,8 +249,8 @@ function AdminBoutiques() {
                 <tr key={b.id} className="group">
                   <td className="py-4 font-bold">{b.name}</td>
                   <td className="py-4 text-foreground/70">{b.area}</td>
-                  <td className="py-4 text-foreground/70">{b.offer}</td>
-                  <td className="py-4 text-foreground/70">{b.offer_type}</td>
+                  <td className="py-4 text-foreground/70">{b.permanent_offer ?? "—"}</td>
+                  <td className="py-4 text-foreground/70">{b.unique_offer ?? "—"}</td>
                   <td className="py-4 text-foreground/70">
                     {b.is_active ? "Active" : "Inactive"}
                   </td>
@@ -254,8 +265,8 @@ function AdminBoutiques() {
                             address: b.address ?? "",
                             lat: b.lat,
                             lng: b.lng,
-                            offer: b.offer,
-                            offer_type: b.offer_type as "permanent" | "unique",
+                            permanent_offer: b.permanent_offer ?? "",
+                            unique_offer: b.unique_offer ?? "",
                             is_active: b.is_active,
                           })
                         }

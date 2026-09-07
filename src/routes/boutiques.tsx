@@ -121,10 +121,28 @@ function BoutiquesPage() {
                   <p className="mt-2 text-xs text-foreground/50">{shop.address}</p>
                 )}
 
-                <div className="mt-8 flex h-28 items-center justify-center bg-[#222222]">
-                  <span className="px-6 text-center text-lg font-black uppercase">
-                    {shop.offer}
-                  </span>
+                <div className="mt-8 space-y-px">
+                  {shop.permanent_offer && (
+                    <div className="bg-[#222222] px-6 py-6 text-center">
+                      <p className="text-[10px] tracking-[0.25em] text-foreground/45">
+                        OFFRE PERMANENTE
+                      </p>
+                      <p className="mt-2 text-lg font-black uppercase">{shop.permanent_offer}</p>
+                    </div>
+                  )}
+                  {shop.unique_offer && (
+                    <div className="bg-[#222222] px-6 py-6 text-center">
+                      <p className="text-[10px] tracking-[0.25em] text-foreground/45">
+                        OFFRE UNIQUE · 1 UTILISATION
+                      </p>
+                      <p className="mt-2 text-lg font-black uppercase">{shop.unique_offer}</p>
+                    </div>
+                  )}
+                  {!shop.permanent_offer && !shop.unique_offer && shop.offer && (
+                    <div className="bg-[#222222] px-6 py-6 text-center">
+                      <p className="text-lg font-black uppercase">{shop.offer}</p>
+                    </div>
+                  )}
                 </div>
 
                 <Link
