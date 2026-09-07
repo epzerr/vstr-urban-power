@@ -45,16 +45,21 @@ export const lockAdmin = createServerFn({ method: "POST" }).handler(async () => 
   return { ok: true as const };
 });
 
-const boutiqueSchema = z.object({
-  name: z.string().min(1, "Le nom est requis"),
-  area: z.string().min(1, "Le quartier est requis"),
-  address: z.string().optional(),
-  lat: z.number(),
-  lng: z.number(),
-  offer: z.string().min(1, "L'offre est requise"),
-  offer_type: z.enum(["permanent", "unique"]).default("permanent"),
-  is_active: z.boolean().default(true),
-});
+const boutiqueSchema = z
+  .object({
+    name: z.string().min(1, "Le nom est requis"),
+    area: z.string().min(1, "Le quartier est requis"),
+    address: z.string().optional(),
+    lat: z.number(),
+    lng: z.number(),
+    permanent_offer: z.string().optional(),
+    unique_offer: z.string().optional(),
+    is_active: z.boolean().default(true),
+  })
+  .refine((d) => (d.permanent_offer?.trim() || d.unique_offer?.trim()), {
+    message: "Renseignez au moins une offre",
+    path: ["permanent_offer"],
+  });
 
 export const listBoutiquesAdmin = createServerFn({ method: "GET" }).handler(async () => {
   await requireUnlocked();
