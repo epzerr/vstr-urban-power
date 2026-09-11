@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, Send } from "lucide-react";
 import { z } from "zod";
+import { supabase } from "@/supabase";
+import AuthNavButton from "@/components/AuthNavButton";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Votre nom est requis").max(100, "Maximum 100 caractères"),
@@ -43,6 +45,8 @@ function ContactPage() {
   });
   const [errors, setErrors] = useState<Partial<Record<keyof ContactForm, string>>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const update = (field: keyof ContactForm, value: string) => {
     setForm((f) => ({ ...f, [field]: value }));
@@ -51,8 +55,10 @@ function ContactPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
+
     const result = contactSchema.safeParse(form);
     if (!result.success) {
       const fieldErrors: typeof errors = {};
@@ -63,8 +69,34 @@ function ContactPage() {
       setErrors(fieldErrors);
       return;
     }
-    setSubmitted(true);
+
+    setSubmitting(true);
+    const { error } = await supabase.from("partenaires_leads").insert({
+      nom: result.data.name,
+      email: result.data.email,
+      sujet: result.data.subject,
+      message: result.data.message,
+    });
+    setSubmitting(false);
+
+    if (error) {
+      setSubmitError("L'envoi a échoué. Réessayez dans un instant.");
+      return;
+    }
+
+    const nom = result.data.name;
+    const email = result.data.email;
+    const sujet = result.data.subject;
+    const message = result.data.message;
+    fetch("https://hook.eu1.make.com/ita87yo414brnmxe2o3ipil5bc2v8nla ", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nom, email, sujet, message }),
+    });
+
     setForm({ name: "", email: "", subject: "", message: "" });
+    setErrors({});
+    setSubmitted(true);
   };
 
   return (
@@ -94,12 +126,7 @@ function ContactPage() {
               Devenir partenaire
             </Link>
           </nav>
-          <Link
-            to="/auth"
-            className="bg-foreground px-5 py-2.5 text-[10px] font-bold tracking-[0.15em] text-background transition-opacity hover:opacity-80 md:text-xs"
-          >
-            S'INSCRIRE / SE CONNECTER
-          </Link>
+          <AuthNavButton />
         </div>
       </header>
 
@@ -195,12 +222,15 @@ function ContactPage() {
               {errors.message && <p className="mt-2 text-xs text-red-400">{errors.message}</p>}
             </div>
 
+            {submitError && <p className="text-xs text-red-400">{submitError}</p>}
+
             <button
               type="submit"
-              className="inline-flex items-center gap-3 bg-foreground px-8 py-4 text-[10px] font-bold uppercase tracking-[0.18em] text-background transition-opacity hover:opacity-80"
+              disabled={submitting}
+              className="inline-flex items-center gap-3 bg-foreground px-8 py-4 text-[10px] font-bold uppercase tracking-[0.18em] text-background transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Send className="h-4 w-4" />
-              Envoyer le message
+              {submitting ? "Envoi en cours…" : "Envoyer le message"}
             </button>
           </form>
         )}

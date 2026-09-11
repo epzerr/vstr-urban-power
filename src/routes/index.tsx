@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { UserPlus, MapPin, PiggyBank, Percent, Gift, Store } from "lucide-react";
 import heroImg from "@/assets/vstr-hero.jpg";
 import cityImg from "@/assets/vstr-city.jpg";
+import AuthNavButton from "@/components/AuthNavButton";
+import { useAuthSession } from "@/hooks/useAuthSession";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,6 +30,16 @@ export const Route = createFileRoute("/")({
 const NAV = ["Boutiques", "Abonnement", "Devenir partenaire"];
 
 function Index() {
+  const { isAuthenticated, loading } = useAuthSession();
+
+  const heroCta = isAuthenticated
+    ? { to: "/boutiques" as const, label: "VOIR LES OFFRES PARTENAIRES" }
+    : { to: "/auth" as const, label: "DÉBLOQUER MON CENTRE-VILLE AVEC VSTR" };
+
+  const bottomCta = isAuthenticated
+    ? { to: "/compte" as const, label: "GÉRER MON ABONNEMENT" }
+    : { to: "/auth" as const, label: "REJOINDRE LE MOUVEMENT VSTR MAINTENANT" };
+
   return (
     <div className="min-h-screen bg-background font-sans text-foreground antialiased">
       <header className="fixed inset-x-0 top-0 z-50 bg-background/95 backdrop-blur-sm">
@@ -64,12 +76,7 @@ function Index() {
               )
             )}
           </nav>
-          <Link
-            to="/auth"
-            className="bg-foreground px-5 py-2.5 text-[10px] font-bold tracking-[0.15em] text-background transition-opacity hover:opacity-80 md:text-xs"
-          >
-            S'INSCRIRE / SE CONNECTER
-          </Link>
+          <AuthNavButton />
         </div>
       </header>
 
@@ -84,12 +91,14 @@ function Index() {
               VSTR : votre pouvoir d'achat urbain redéfini
             </h1>
             <div className="mt-12">
-              <Link
-                to="/abonnement"
-                className="inline-block bg-foreground px-10 py-5 text-xs font-bold tracking-[0.2em] text-background transition-opacity hover:opacity-80"
-              >
-                DÉBLOQUER MON CENTRE-VILLE AVEC VSTR
-              </Link>
+              {!loading && (
+                <Link
+                  to={heroCta.to}
+                  className="inline-block bg-foreground px-10 py-5 text-xs font-bold tracking-[0.2em] text-background transition-opacity hover:opacity-80"
+                >
+                  {heroCta.label}
+                </Link>
+              )}
             </div>
           </div>
           <div className="order-1 md:order-2 md:translate-y-10">
@@ -220,12 +229,14 @@ function Index() {
             Votre prochaine étape est ici.
           </h2>
           <div className="mt-14">
-            <Link
-              to="/abonnement"
-              className="inline-block bg-foreground px-12 py-6 text-xs font-bold tracking-[0.2em] text-background transition-opacity hover:opacity-80 md:text-sm"
-            >
-              REJOINDRE LE MOUVEMENT VSTR MAINTENANT
-            </Link>
+            {!loading && (
+              <Link
+                to={bottomCta.to}
+                className="inline-block bg-foreground px-12 py-6 text-xs font-bold tracking-[0.2em] text-background transition-opacity hover:opacity-80 md:text-sm"
+              >
+                {bottomCta.label}
+              </Link>
+            )}
           </div>
         </div>
       </section>

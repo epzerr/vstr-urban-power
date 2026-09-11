@@ -1,18 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { listBoutiques } from "@/lib/boutiques.functions";
+import { supabase } from "@/supabase";
+import type { BoutiquePublic } from "@/components/BoutiquesMap";
+import AuthNavButton from "@/components/AuthNavButton";
 
 const BoutiquesMap = lazy(() => import("@/components/BoutiquesMap"));
 
 export const Route = createFileRoute("/boutiques")({
-  loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData({
-      queryKey: ["boutiques"],
-      queryFn: () => listBoutiques(),
-    });
-  },
   head: () => ({
     meta: [
       { title: "Boutiques partenaires à Nantes — VSTR" },
@@ -35,11 +30,31 @@ export const Route = createFileRoute("/boutiques")({
 });
 
 function BoutiquesPage() {
-  const [mapReady, setMapReady] = useState(false);
-  const { data: shops = [] } = useQuery({
-    queryKey: ["boutiques"],
-    queryFn: () => listBoutiques(),
-  });
+  const [shops, setShops] = useState<BoutiquePublic[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadBoutiques() {
+      const { data, error } = await supabase
+        .from("boutiques")
+        .select("*")
+        .eq("active", true);
+
+      if (cancelled) return;
+      if (error) {
+        console.error("[boutiques]", error.message);
+        setShops([]);
+        return;
+      }
+      setShops((data ?? []) as BoutiquePublic[]);
+    }
+
+    void loadBoutiques();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background font-sans text-foreground antialiased">
@@ -65,18 +80,13 @@ function BoutiquesPage() {
               Devenir partenaire
             </Link>
           </nav>
-          <Link
-            to="/auth"
-            className="bg-foreground px-5 py-2.5 text-[10px] font-bold tracking-[0.15em] text-background transition-opacity hover:opacity-80 md:text-xs"
-          >
-            S'INSCRIRE / SE CONNECTER
-          </Link>
+          <AuthNavButton />
         </div>
       </header>
 
       {/* MAP */}
       <section className="pt-28 pb-16">
-        <div className="mx-auto max-w-[1600px] px-6 md:px-12">
+        <div className="mx-auto max-w-[1400px] px-6 md:px-12">
           <Link
             to="/"
             className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground"
@@ -87,15 +97,16 @@ function BoutiquesPage() {
           <h1 className="mt-6 max-w-4xl text-[clamp(2rem,5vw,4.25rem)] font-black uppercase leading-[0.9] tracking-[-0.03em]">
             Les boutiques partenaires VSTR
           </h1>
-        </div>
 
-        <div className="mt-12 h-[420px] w-full border-y border-foreground/10 md:h-[560px]">
-          {typeof window !== "undefined" && (
-            <Suspense fallback={<div className="h-full w-full bg-[#111111]" />}>
-              <BoutiquesMap shops={shops} />
-            </Suspense>
-          )}
-          {typeof window === "undefined" && <div className="h-full w-full bg-[#111111]" />}
+          <div className="mt-12 h-[380px] w-full overflow-hidden border border-foreground/10 md:h-[480px]">
+            {typeof window !== "undefined" ? (
+              <Suspense fallback={<div className="h-full w-full bg-[#111111]" />}>
+                <BoutiquesMap shops={shops} />
+              </Suspense>
+            ) : (
+              <div className="h-full w-full bg-[#111111]" />
+            )}
+          </div>
         </div>
       </section>
 
@@ -110,37 +121,36 @@ function BoutiquesPage() {
             débloquer l'utilisation des réductions en boutique.
           </p>
 
-          <div className="mt-14 grid gap-px bg-foreground/10 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {shops.map((shop) => (
-              <article key={shop.id} className="flex flex-col bg-[#111111] p-8">
+              <article
+                key={shop.id}
+                id={`boutique-${shop.id}`}
+                className="flex w-full max-w-xl flex-col border border-foreground/10 bg-[#111111] p-8 sm:max-w-none scroll-mt-28"
+              >
                 <p className="text-[10px] tracking-[0.3em] text-foreground/45">
-                  {shop.area.toUpperCase()}
+                  {(shop.quartier || "").toUpperCase()}
                 </p>
-                <h3 className="mt-4 text-2xl font-black uppercase tracking-[-0.01em]">{shop.name}</h3>
-                {shop.address && (
-                  <p className="mt-2 text-xs text-foreground/50">{shop.address}</p>
+                <h3 className="mt-4 text-2xl font-black uppercase tracking-[-0.01em]">{shop.nom}</h3>
+                {shop.adresse && (
+                  <p className="mt-2 text-xs text-foreground/50">{shop.adresse}</p>
                 )}
 
                 <div className="mt-8 space-y-px">
-                  {shop.permanent_offer && (
+                  {shop.offre_permanente && (
                     <div className="bg-[#222222] px-6 py-6 text-center">
                       <p className="text-[10px] tracking-[0.25em] text-foreground/45">
                         OFFRE PERMANENTE
                       </p>
-                      <p className="mt-2 text-lg font-black uppercase">{shop.permanent_offer}</p>
+                      <p className="mt-2 text-lg font-black uppercase">{shop.offre_permanente}</p>
                     </div>
                   )}
-                  {shop.unique_offer && (
+                  {shop.offre_unique && (
                     <div className="bg-[#222222] px-6 py-6 text-center">
                       <p className="text-[10px] tracking-[0.25em] text-foreground/45">
                         OFFRE UNIQUE · 1 UTILISATION
                       </p>
-                      <p className="mt-2 text-lg font-black uppercase">{shop.unique_offer}</p>
-                    </div>
-                  )}
-                  {!shop.permanent_offer && !shop.unique_offer && shop.offer && (
-                    <div className="bg-[#222222] px-6 py-6 text-center">
-                      <p className="text-lg font-black uppercase">{shop.offer}</p>
+                      <p className="mt-2 text-lg font-black uppercase">{shop.offre_unique}</p>
                     </div>
                   )}
                 </div>

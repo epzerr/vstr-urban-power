@@ -1,7 +1,7 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { unlockAdmin } from "@/lib/admin-boutiques.functions";
+
+const ADMIN_PASSWORD = "admin123";
 
 export const Route = createFileRoute("/admin/unlock")({
   head: () => ({
@@ -18,16 +18,18 @@ export const Route = createFileRoute("/admin/unlock")({
 });
 
 function Unlock() {
-  const router = useRouter();
-  const unlock = useServerFn(unlockAdmin);
+  const navigate = useNavigate();
   const [error, setError] = useState(false);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const password = new FormData(e.currentTarget).get("password") as string;
-    const { ok } = await unlock({ data: { password } });
-    if (ok) await router.navigate({ to: "/admin/boutiques" });
-    else setError(true);
+    if (password !== ADMIN_PASSWORD) {
+      setError(true);
+      return;
+    }
+    localStorage.setItem("isAdmin", "true");
+    navigate({ to: "/admin/boutiques" });
   }
 
   return (

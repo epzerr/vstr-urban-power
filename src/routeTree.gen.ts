@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AbonnementRouteImport } from './routes/abonnement'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BoutiquesRouteImport } from './routes/boutiques'
+import { Route as CompteRouteImport } from './routes/compte'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as PaiementRouteImport } from './routes/paiement'
 import { Route as AdminBoutiquesRouteImport } from './routes/admin/boutiques'
@@ -36,6 +37,11 @@ const AuthRoute = AuthRouteImport.update({
 const BoutiquesRoute = BoutiquesRouteImport.update({
   id: '/boutiques',
   path: '/boutiques',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompteRoute = CompteRouteImport.update({
+  id: '/compte',
+  path: '/compte',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/abonnement': typeof AbonnementRoute
   '/auth': typeof AuthRoute
   '/boutiques': typeof BoutiquesRoute
+  '/compte': typeof CompteRoute
   '/contact': typeof ContactRoute
   '/paiement': typeof PaiementRoute
   '/admin/boutiques': typeof AdminBoutiquesRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/abonnement': typeof AbonnementRoute
   '/auth': typeof AuthRoute
   '/boutiques': typeof BoutiquesRoute
+  '/compte': typeof CompteRoute
   '/contact': typeof ContactRoute
   '/paiement': typeof PaiementRoute
   '/admin/boutiques': typeof AdminBoutiquesRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/abonnement': typeof AbonnementRoute
   '/auth': typeof AuthRoute
   '/boutiques': typeof BoutiquesRoute
+  '/compte': typeof CompteRoute
   '/contact': typeof ContactRoute
   '/paiement': typeof PaiementRoute
   '/admin/boutiques': typeof AdminBoutiquesRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/abonnement'
     | '/auth'
     | '/boutiques'
+    | '/compte'
     | '/contact'
     | '/paiement'
     | '/admin/boutiques'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/abonnement'
     | '/auth'
     | '/boutiques'
+    | '/compte'
     | '/contact'
     | '/paiement'
     | '/admin/boutiques'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/abonnement'
     | '/auth'
     | '/boutiques'
+    | '/compte'
     | '/contact'
     | '/paiement'
     | '/admin/boutiques'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   AbonnementRoute: typeof AbonnementRoute
   AuthRoute: typeof AuthRoute
   BoutiquesRoute: typeof BoutiquesRoute
+  CompteRoute: typeof CompteRoute
   ContactRoute: typeof ContactRoute
   PaiementRoute: typeof PaiementRoute
   AdminBoutiquesRoute: typeof AdminBoutiquesRoute
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/boutiques'
       fullPath: '/boutiques'
       preLoaderRoute: typeof BoutiquesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compte': {
+      id: '/compte'
+      path: '/compte'
+      fullPath: '/compte'
+      preLoaderRoute: typeof CompteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   AbonnementRoute: AbonnementRoute,
   AuthRoute: AuthRoute,
   BoutiquesRoute: BoutiquesRoute,
+  CompteRoute: CompteRoute,
   ContactRoute: ContactRoute,
   PaiementRoute: PaiementRoute,
   AdminBoutiquesRoute: AdminBoutiquesRoute,

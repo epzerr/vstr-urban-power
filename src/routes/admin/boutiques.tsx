@@ -1,23 +1,10 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Lock, Trash2, Pencil, Plus } from "lucide-react";
-import {
-  listBoutiquesAdmin,
-  createBoutique,
-  updateBoutique,
-  deleteBoutique,
-  lockAdmin,
-} from "@/lib/admin-boutiques.functions";
+import { supabase } from "@/supabase";
 
 export const Route = createFileRoute("/admin/boutiques")({
-  loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData({
-      queryKey: ["admin-boutiques"],
-      queryFn: () => listBoutiquesAdmin(),
-    });
-  },
   head: () => ({
     meta: [
       { title: "Admin VSTR — Boutiques" },
@@ -31,80 +18,156 @@ export const Route = createFileRoute("/admin/boutiques")({
   component: AdminBoutiques,
 });
 
+type BoutiqueRow = {
+  id: string;
+  nom: string;
+  quartier: string;
+  adresse: string | null;
+  latitude: number;
+  longitude: number;
+  active: boolean;
+  offre_permanente: string | null;
+  offre_unique: string | null;
+};
+
 type BoutiqueForm = {
-  name: string;
-  area: string;
-  address: string;
-  lat: number;
-  lng: number;
-  permanent_offer: string;
-  unique_offer: string;
-  is_active: boolean;
+  nom: string;
+  quartier: string;
+  adresse: string;
+  latitude: string;
+  longitude: string;
+  active: boolean;
+  offre_permanente: string;
+  offre_unique: string;
 };
 
 const EMPTY: BoutiqueForm = {
-  name: "",
-  area: "",
-  address: "",
-  lat: 47.2155,
-  lng: -1.5554,
-  permanent_offer: "",
-  unique_offer: "",
-  is_active: true,
+  nom: "",
+  quartier: "",
+  adresse: "",
+  latitude: "47.2155",
+  longitude: "-1.5554",
+  active: true,
+  offre_permanente: "",
+  offre_unique: "",
 };
 
 const inputClass =
   "w-full border border-border/40 bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-foreground";
 
+function parseCoord(value: string): number {
+  return parseFloat(String(value).trim().replace(",", "."));
+}
+
+async function fetchBoutiques(): Promise<BoutiqueRow[]> {
+  const { data, error } = await supabase.from("boutiques").select("*").order("nom");
+  if (error) throw error;
+  return (data ?? []) as BoutiqueRow[];
+}
+
 function AdminBoutiques() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [authorized, setAuthorized] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("isAdmin") !== "true") {
+      navigate({ to: "/admin/unlock" });
+      return;
+    }
+    setAuthorized(true);
+  }, [navigate]);
+
   const { data: boutiques = [] } = useQuery({
     queryKey: ["admin-boutiques"],
-    queryFn: () => listBoutiquesAdmin(),
+    queryFn: fetchBoutiques,
+    enabled: authorized,
   });
 
-  const create = useServerFn(createBoutique);
-  const update = useServerFn(updateBoutique);
-  const remove = useServerFn(deleteBoutique);
-  const lock = useServerFn(lockAdmin);
-
   const [editing, setEditing] = useState<(BoutiqueForm & { id?: string }) | null>(null);
+  const [formKey, setFormKey] = useState(0);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!editing) return;
+
+    setFormError(null);
+    setSuccess(null);
+
     const form = new FormData(e.currentTarget);
+    const offre_permanente = String(form.get("offre_permanente") || "").trim();
+    const offre_unique = String(form.get("offre_unique") || "").trim();
+
+    if (!offre_permanente && !offre_unique) {
+      setFormError("Renseignez au moins une des deux offres.");
+      return;
+    }
+
+    const latitude = parseCoord(String(form.get("latitude") || ""));
+    const longitude = parseCoord(String(form.get("longitude") || ""));
+
+    if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
+      setFormError("Latitude et longitude doivent être des nombres valides.");
+      return;
+    }
+
     const payload = {
-      name: String(form.get("name")),
-      area: String(form.get("area")),
-      address: String(form.get("address") || ""),
-      lat: Number(form.get("lat")),
-      lng: Number(form.get("lng")),
-      permanent_offer: String(form.get("permanent_offer") || ""),
-      unique_offer: String(form.get("unique_offer") || ""),
-      is_active: form.get("is_active") === "on",
+      nom: String(form.get("nom")).trim(),
+      quartier: String(form.get("quartier")).trim(),
+      adresse: String(form.get("adresse") || "").trim() || null,
+      latitude,
+      longitude,
+      active: form.get("active") === "on",
+      offre_permanente: offre_permanente || null,
+      offre_unique: offre_unique || null,
     };
 
+    setSubmitting(true);
+
     if (editing.id) {
-      await update({ data: { id: editing.id, ...payload } });
+      const { error } = await supabase.from("boutiques").update(payload).eq("id", editing.id);
+      setSubmitting(false);
+      if (error) {
+        setFormError("La mise à jour a échoué. Réessayez.");
+        return;
+      }
+      setSuccess("Boutique mise à jour.");
+      setEditing(null);
     } else {
-      await create({ data: payload });
+      const { error } = await supabase.from("boutiques").insert(payload);
+      setSubmitting(false);
+      if (error) {
+        setFormError("L'ajout a échoué. Réessayez.");
+        return;
+      }
+      setSuccess("Boutique ajoutée avec succès.");
+      setEditing({ ...EMPTY });
+      setFormKey((k) => k + 1);
     }
-    setEditing(null);
+
     await queryClient.invalidateQueries({ queryKey: ["admin-boutiques"] });
   }
 
   async function onDelete(id: string) {
     if (!confirm("Supprimer cette boutique ?")) return;
-    await remove({ data: { id } });
+    const { error } = await supabase.from("boutiques").delete().eq("id", id);
+    if (error) {
+      setFormError("La suppression a échoué. Réessayez.");
+      return;
+    }
+    setSuccess("Boutique supprimée.");
     await queryClient.invalidateQueries({ queryKey: ["admin-boutiques"] });
   }
 
-  async function logout() {
-    await lock();
-    await router.navigate({ to: "/admin/unlock" });
+  function logout() {
+    localStorage.removeItem("isAdmin");
+    navigate({ to: "/admin/unlock" });
   }
+
+  if (!authorized) return null;
 
   return (
     <div className="min-h-screen bg-background px-6 py-12 text-foreground md:px-12">
@@ -115,7 +178,10 @@ function AdminBoutiques() {
           </Link>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setEditing({ ...EMPTY })}
+              onClick={() => {
+                setFormError(null);
+                setEditing({ ...EMPTY });
+              }}
               className="inline-flex items-center gap-2 bg-foreground px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-background transition-opacity hover:opacity-80"
             >
               <Plus className="h-3.5 w-3.5" /> Ajouter
@@ -133,55 +199,68 @@ function AdminBoutiques() {
           Boutiques partenaires
         </h1>
 
+        {success && (
+          <p className="mt-6 border border-foreground/15 px-4 py-3 text-sm text-foreground/80">
+            {success}
+          </p>
+        )}
+        {formError && !editing && (
+          <p className="mt-6 text-sm text-destructive">{formError}</p>
+        )}
+
         {editing && (
-          <form onSubmit={onSubmit} className="mt-8 border border-border/40 bg-card p-6">
+          <form
+            key={formKey}
+            onSubmit={onSubmit}
+            className="mt-8 border border-border/40 bg-card p-6"
+          >
             <h2 className="text-sm font-black uppercase tracking-[0.1em]">
               {editing.id ? "Modifier" : "Nouvelle boutique"}
             </h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <input
-                name="name"
-                defaultValue={editing.name}
+                name="nom"
+                defaultValue={editing.nom}
                 placeholder="Nom"
                 required
                 className={inputClass}
               />
               <input
-                name="area"
-                defaultValue={editing.area}
+                name="quartier"
+                defaultValue={editing.quartier}
                 placeholder="Quartier"
                 required
                 className={inputClass}
               />
               <input
-                name="address"
-                defaultValue={editing.address}
+                name="adresse"
+                defaultValue={editing.adresse}
                 placeholder="Adresse"
                 className={inputClass}
               />
               <input
-                name="lat"
-                type="number"
-                step="any"
-                defaultValue={editing.lat}
+                name="latitude"
+                type="text"
+                inputMode="decimal"
+                defaultValue={editing.latitude}
                 placeholder="Latitude"
                 required
                 className={inputClass}
               />
               <input
-                name="lng"
-                type="number"
-                step="any"
-                defaultValue={editing.lng}
+                name="longitude"
+                type="text"
+                inputMode="decimal"
+                defaultValue={editing.longitude}
                 placeholder="Longitude"
                 required
                 className={inputClass}
               />
               <label className="flex items-center gap-2 text-sm">
                 <input
-                  name="is_active"
+                  name="active"
                   type="checkbox"
-                  defaultChecked={editing.is_active}
+                  defaultChecked={editing.active}
                   className="h-4 w-4 accent-foreground"
                 />
                 Active
@@ -193,8 +272,8 @@ function AdminBoutiques() {
                   Offre permanente
                 </label>
                 <input
-                  name="permanent_offer"
-                  defaultValue={editing.permanent_offer}
+                  name="offre_permanente"
+                  defaultValue={editing.offre_permanente}
                   placeholder="Ex : -10% toute l'année"
                   className={`${inputClass} mt-2`}
                 />
@@ -204,8 +283,8 @@ function AdminBoutiques() {
                   Offre unique (une seule utilisation)
                 </label>
                 <input
-                  name="unique_offer"
-                  defaultValue={editing.unique_offer}
+                  name="offre_unique"
+                  defaultValue={editing.offre_unique}
                   placeholder="Ex : -20% une fois"
                   className={`${inputClass} mt-2`}
                 />
@@ -214,16 +293,21 @@ function AdminBoutiques() {
             <p className="mt-3 text-xs text-foreground/50">
               Renseignez au moins une des deux offres.
             </p>
+            {formError && <p className="mt-3 text-xs text-destructive">{formError}</p>}
             <div className="mt-6 flex gap-3">
               <button
                 type="submit"
-                className="bg-foreground px-6 py-2 text-xs font-bold uppercase tracking-[0.12em] text-background transition-opacity hover:opacity-80"
+                disabled={submitting}
+                className="bg-foreground px-6 py-2 text-xs font-bold uppercase tracking-[0.12em] text-background transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Enregistrer
+                {submitting ? "Enregistrement…" : "Enregistrer"}
               </button>
               <button
                 type="button"
-                onClick={() => setEditing(null)}
+                onClick={() => {
+                  setEditing(null);
+                  setFormError(null);
+                }}
                 className="border border-border/40 px-6 py-2 text-xs font-bold uppercase tracking-[0.12em] transition-colors hover:bg-foreground/10"
               >
                 Annuler
@@ -247,29 +331,28 @@ function AdminBoutiques() {
             <tbody className="divide-y divide-border/20">
               {boutiques.map((b) => (
                 <tr key={b.id} className="group">
-                  <td className="py-4 font-bold">{b.name}</td>
-                  <td className="py-4 text-foreground/70">{b.area}</td>
-                  <td className="py-4 text-foreground/70">{b.permanent_offer ?? "—"}</td>
-                  <td className="py-4 text-foreground/70">{b.unique_offer ?? "—"}</td>
-                  <td className="py-4 text-foreground/70">
-                    {b.is_active ? "Active" : "Inactive"}
-                  </td>
+                  <td className="py-4 font-bold">{b.nom}</td>
+                  <td className="py-4 text-foreground/70">{b.quartier}</td>
+                  <td className="py-4 text-foreground/70">{b.offre_permanente ?? "—"}</td>
+                  <td className="py-4 text-foreground/70">{b.offre_unique ?? "—"}</td>
+                  <td className="py-4 text-foreground/70">{b.active ? "Active" : "Inactive"}</td>
                   <td className="py-4">
                     <div className="flex items-center justify-end gap-2 opacity-60 transition-opacity group-hover:opacity-100">
                       <button
-                        onClick={() =>
+                        onClick={() => {
+                          setFormError(null);
                           setEditing({
                             id: b.id,
-                            name: b.name,
-                            area: b.area,
-                            address: b.address ?? "",
-                            lat: b.lat,
-                            lng: b.lng,
-                            permanent_offer: b.permanent_offer ?? "",
-                            unique_offer: b.unique_offer ?? "",
-                            is_active: b.is_active,
-                          })
-                        }
+                            nom: b.nom,
+                            quartier: b.quartier,
+                            adresse: b.adresse ?? "",
+                            latitude: String(b.latitude),
+                            longitude: String(b.longitude),
+                            active: b.active,
+                            offre_permanente: b.offre_permanente ?? "",
+                            offre_unique: b.offre_unique ?? "",
+                          });
+                        }}
                         className="p-2 transition-colors hover:bg-foreground/10"
                         aria-label="Modifier"
                       >
